@@ -20,6 +20,13 @@
 -->
 # Release Notes
 
+### 1.2.0.1wr (Apr 8, 2016)
+* Equivalent to 1.2.0, compatible with Cordova 6
+* Added Windows Phone 8 support
+* Fixed a activity overlay freezing when calling activityStop quickly after activityStart.
+* Update activityStart for Android. Now a second call update the dialog. Added "cancelable" parameter.
+* Add ActivityStart and ActivityStop support on iOS
+
 ### 1.2.0 (Nov 18, 2015)
 * [CB-10035](https://issues.apache.org/jira/browse/CB-10035) Updated `RELEASENOTES` to be newest to oldest
 * [CB-8549](https://issues.apache.org/jira/browse/CB-8549) Updated source to pass `Fortify` scan.
