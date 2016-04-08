@@ -420,8 +420,10 @@ namespace WPCordovaClassLib.Cordova.Commands
                             }
                             progressLayer = new ProgressLayer();
                             progressLayer.IsEnabled = true;
-                            progressLayer.title.Text = args[0];
-                            progressLayer.message.Text = args[1];
+                            progressLayer.title.Text = !String.IsNullOrEmpty(args[0]) ? args[0] : args[1];
+                            if (!String.IsNullOrEmpty(args[0]) && !String.IsNullOrEmpty(args[1])) {
+                                progressLayer.message.Text = args[1];
+                            }
                             grid.Children.Add(progressLayer);
                         }
                     }
