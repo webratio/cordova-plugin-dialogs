@@ -151,7 +151,15 @@
         <source-file src="src/wp/Notification.cs" />
         <source-file src="src/wp/NotificationBox.xaml.cs" />
         <source-file src="src/wp/NotificationBox.xaml" />
+        <source-file src="src/wp/ProgressLayer.xaml.cs" />
+        <source-file src="src/wp/ProgressLayer.xaml" />
+                
         <source-file src="src/wp/notification-beep.wav" />
+        
+        <!-- wp8 specific notification apis -->
+        <js-module src="www/wp8/notification.js" name="notification_wp8">
+            <merges target="navigator.notification" />
+        </js-module>        
     </platform>
 
     <!-- windows8 -->

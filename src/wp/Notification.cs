@@ -1,4 +1,4 @@
-﻿/*  
+/*  
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
 	You may obtain a copy of the License at
@@ -23,13 +23,14 @@ using Microsoft.Phone.Controls;
 using Microsoft.Xna.Framework.Audio;
 using WPCordovaClassLib.Cordova.UI;
 using System.Diagnostics;
+using Microsoft.Phone.Shell;
 
 
 namespace WPCordovaClassLib.Cordova.Commands
 {
     public class Notification : BaseCommand
     {
-        static ProgressBar progressBar = null;
+        static ProgressLayer progressLayer = null;
         const int DEFAULT_DURATION = 5;
 
         private NotificationBox notifyBox;
@@ -53,6 +54,9 @@ namespace WPCordovaClassLib.Cordova.Commands
                 return page;
             }
         }
+        
+        
+
 
         // blink api - doesn't look like there is an equivalent api we can use...
 
@@ -102,6 +106,7 @@ namespace WPCordovaClassLib.Cordova.Commands
                 this.input1 = text;
             }
         }
+
 
         public void alert(string options)
         {
@@ -394,32 +399,30 @@ namespace WPCordovaClassLib.Cordova.Commands
         }
 
         // Display an indeterminate progress indicator
-        public void activityStart(string unused)
+        public void activityStart(string options)
         {
-
+            string[] args = JSON.JsonHelper.Deserialize<string[]>(options);
             Deployment.Current.Dispatcher.BeginInvoke(() =>
             {
                 PhoneApplicationFrame frame = Application.Current.RootVisual as PhoneApplicationFrame;
-
                 if (frame != null)
                 {
                     PhoneApplicationPage page = frame.Content as PhoneApplicationPage;
-
                     if (page != null)
                     {
                         var temp = page.FindName("LayoutRoot");
                         Grid grid = temp as Grid;
                         if (grid != null)
                         {
-                            if (progressBar != null)
+                            if (progressLayer != null)
                             {
-                                grid.Children.Remove(progressBar);
+                                grid.Children.Remove(progressLayer);
                             }
-                            progressBar = new ProgressBar();
-                            progressBar.IsIndeterminate = true;
-                            progressBar.IsEnabled = true;
-
-                            grid.Children.Add(progressBar);
+                            progressLayer = new ProgressLayer();
+                            progressLayer.IsEnabled = true;
+                            progressLayer.title.Text = args[0];
+                            progressLayer.message.Text = args[1];
+                            grid.Children.Add(progressLayer);
                         }
                     }
                 }
@@ -432,9 +435,9 @@ namespace WPCordovaClassLib.Cordova.Commands
         {
             Deployment.Current.Dispatcher.BeginInvoke(() =>
             {
-                if (progressBar != null)
+                if (progressLayer != null)
                 {
-                    progressBar.IsEnabled = false;
+                    progressLayer.IsEnabled = false;
                     PhoneApplicationFrame frame = Application.Current.RootVisual as PhoneApplicationFrame;
                     if (frame != null)
                     {
@@ -444,14 +447,91 @@ namespace WPCordovaClassLib.Cordova.Commands
                             Grid grid = page.FindName("LayoutRoot") as Grid;
                             if (grid != null)
                             {
-                                grid.Children.Remove(progressBar);
+                                grid.Children.Remove(progressLayer);
                             }
                         }
                     }
-                    progressBar = null;
+                    progressLayer = null;
                 }
             });
         }
+
+
+        // Display a determinate progress indicator
+        public void progressStart(string options)
+        {
+            string[] args = JSON.JsonHelper.Deserialize<string[]>(options);
+            Deployment.Current.Dispatcher.BeginInvoke(() =>
+            {
+                PhoneApplicationFrame frame = Application.Current.RootVisual as PhoneApplicationFrame;
+                if (frame != null)
+                {
+                    PhoneApplicationPage page = frame.Content as PhoneApplicationPage;
+                    if (page != null)
+                    {
+                        var temp = page.FindName("LayoutRoot");
+                        Grid grid = temp as Grid;
+                        if (grid != null)
+                        {
+                            if (progressLayer != null)
+                            {
+                                grid.Children.Remove(progressLayer);
+                            }
+                            progressLayer = new ProgressLayer();
+                            progressLayer.IsEnabled = true;
+                            progressLayer.progressBar.IsIndeterminate = false;
+                            progressLayer.progressBar.Maximum = 100;
+                            progressLayer.title.Text = args[0];
+                            progressLayer.message.Text = args[1];
+                            grid.Children.Add(progressLayer);
+                        }
+                    }
+                }
+            });
+        }
+
+
+        // Remove our determinate progress indicator
+        public void progressStop(string unused)
+        {
+            Deployment.Current.Dispatcher.BeginInvoke(() =>
+            {
+                if (progressLayer != null)
+                {
+                    progressLayer.IsEnabled = false;
+                    PhoneApplicationFrame frame = Application.Current.RootVisual as PhoneApplicationFrame;
+                    if (frame != null)
+                    {
+                        PhoneApplicationPage page = frame.Content as PhoneApplicationPage;
+                        if (page != null)
+                        {
+                            Grid grid = page.FindName("LayoutRoot") as Grid;
+                            if (grid != null)
+                            {
+                                grid.Children.Remove(progressLayer);
+                            }
+                        }
+                    }
+                    progressLayer = null;
+                }
+            });
+        }
+
+
+        // Set the determinate progress indicator value
+        public void progressValue(string options)
+        {
+            string[] args = JSON.JsonHelper.Deserialize<string[]>(options);
+            Deployment.Current.Dispatcher.BeginInvoke(() =>
+            {
+                if (progressLayer != null)
+                {
+                    progressLayer.progressBar.Value = int.Parse(args[0]);
+                }
+            });
+        }
+
+
 
         public void vibrate(string vibrateDuration)
         {
@@ -478,5 +558,6 @@ namespace WPCordovaClassLib.Cordova.Commands
             // TODO: may need to add listener to trigger DispatchCommandResult when the vibration ends...
             DispatchCommandResult();
         }
+
     }
 }
