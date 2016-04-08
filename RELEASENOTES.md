@@ -115,3 +115,6 @@
 * Update activityStart for Android. Now a second call update the dialog. Added "cancelable" parameter.
 * Add ActivityStart and ActivityStop support on iOS
 * Renamed plugin id to "com.webratio.phonegap.plugins.dialogs"
+
+### 0.2.11.2 (Jun 12, 2015)
+* Fixed a activity overlay freezing when calling activityStop quickly after activityStart.
