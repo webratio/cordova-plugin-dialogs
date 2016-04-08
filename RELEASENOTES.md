@@ -110,3 +110,8 @@
 * CB-7414 **BB10** Document callback parameter for `navigator.notification.alert`
 * CB-7700 cordova-plugin-dialogs documentation translation: cordova-plugin-dialogs
 * CB-7571 Bump version of nested plugin to match parent plugin
+
+### 0.2.11.1 (Jan 21, 2015)
+* Update activityStart for Android. Now a second call update the dialog. Added "cancelable" parameter.
+* Add ActivityStart and ActivityStop support on iOS
+* Renamed plugin id to "com.webratio.phonegap.plugins.dialogs"
