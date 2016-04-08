@@ -21,6 +21,7 @@ package org.apache.cordova.dialogs;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.LOG;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,6 +49,8 @@ import android.widget.TextView;
  */
 public class Notification extends CordovaPlugin {
 
+    private static final String LOG_TAG = "Notification";
+    
     public int confirmResult = -1;
     public ProgressDialog spinnerDialog = null;
     public ProgressDialog progressDialog = null;
@@ -141,6 +144,7 @@ public class Notification extends CordovaPlugin {
                             try {
                                 Thread.sleep(100);
                             } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
                             }
                         }
                     }
@@ -217,7 +221,9 @@ public class Notification extends CordovaPlugin {
                                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, 1));
                                 }
                             });
-                    } catch (JSONException e) { }
+                    } catch (JSONException e) {
+                        LOG.d(LOG_TAG,"JSONException on first button.");
+                    }
                 }
 
                 // Second button
@@ -230,7 +236,9 @@ public class Notification extends CordovaPlugin {
                                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, 2));
                                 }
                             });
-                    } catch (JSONException e) { }
+                    } catch (JSONException e) {
+                        LOG.d(LOG_TAG,"JSONException on second button.");
+                    }
                 }
 
                 // Third button
@@ -243,7 +251,9 @@ public class Notification extends CordovaPlugin {
                                   callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, 3));
                                 }
                             });
-                    } catch (JSONException e) { }
+                    } catch (JSONException e) {
+                        LOG.d(LOG_TAG,"JSONException on third button.");
+                    }
                 }
                 dlg.setOnCancelListener(new AlertDialog.OnCancelListener() {
                     public void onCancel(DialogInterface dialog)
@@ -298,11 +308,15 @@ public class Notification extends CordovaPlugin {
                                     try {
                                         result.put("buttonIndex",1);
                                         result.put("input1", promptInput.getText().toString().trim().length()==0 ? defaultText : promptInput.getText());											
-                                    } catch (JSONException e) { e.printStackTrace(); }
+                                    } catch (JSONException e) {
+                                        LOG.d(LOG_TAG,"JSONException on first button.", e);
+                                    }
                                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result));
                                 }
                             });
-                    } catch (JSONException e) { }
+                    } catch (JSONException e) {
+                        LOG.d(LOG_TAG,"JSONException on first button.");
+                    }
                 }
 
                 // Second button
@@ -315,11 +329,15 @@ public class Notification extends CordovaPlugin {
                                     try {
                                         result.put("buttonIndex",2);
                                         result.put("input1", promptInput.getText().toString().trim().length()==0 ? defaultText : promptInput.getText());
-                                    } catch (JSONException e) { e.printStackTrace(); }
+                                    } catch (JSONException e) {
+                                        LOG.d(LOG_TAG,"JSONException on second button.", e);
+                                    }
                                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result));
                                 }
                             });
-                    } catch (JSONException e) { }
+                    } catch (JSONException e) {
+                        LOG.d(LOG_TAG,"JSONException on second button.");
+                    }
                 }
 
                 // Third button
@@ -332,11 +350,15 @@ public class Notification extends CordovaPlugin {
                                     try {
                                         result.put("buttonIndex",3);
                                         result.put("input1", promptInput.getText().toString().trim().length()==0 ? defaultText : promptInput.getText());
-                                    } catch (JSONException e) { e.printStackTrace(); }
+                                    } catch (JSONException e) { 
+                                        LOG.d(LOG_TAG,"JSONException on third button.", e);
+                                    }
                                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result));
                                 }
                             });
-                    } catch (JSONException e) { }
+                    } catch (JSONException e) {
+                        LOG.d(LOG_TAG,"JSONException on third button.");
+                    }
                 }
                 dlg.setOnCancelListener(new AlertDialog.OnCancelListener() {
                     public void onCancel(DialogInterface dialog){
