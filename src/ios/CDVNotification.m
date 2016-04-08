@@ -20,6 +20,7 @@
 #import "CDVNotification.h"
 #import <Cordova/NSDictionary+Extensions.h>
 #import <Cordova/NSArray+Comparisons.h>
+#import "MBProgressHUD.h"
 
 #define DIALOG_TYPE_ALERT @"alert"
 #define DIALOG_TYPE_PROMPT @"prompt"
@@ -147,6 +148,48 @@ static void soundCompletionCallback(SystemSoundID  ssid, void* data) {
     playBeep([count intValue]);
 }
 
+- (void)activityStart:(CDVInvokedUrlCommand *)command
+{
+    
+    NSString* title = [command.arguments objectAtIndex:0];
+    NSString* message = [command.arguments objectAtIndex:1];
+    //bool cancelable = [[command.arguments objectAtIndex:2] boolValue];
+    
+    //UIColor* color = [command.arguments objectAtIndex:3];
+    
+    // initialize indicator with options, text, detail
+    if (self.progressIndicator == nil) { 
+    	self.progressIndicator = [MBProgressHUD showHUDAddedTo:self.webView.superview animated:YES];
+    	self.progressIndicator.mode = MBProgressHUDModeIndeterminate;
+    	self.progressIndicator.dimBackground = YES;
+    }
+    if (title != nil && [title length] > 0) {
+        self.progressIndicator.labelText = title;
+    } else {
+    	self.progressIndicator.labelText = nil;
+    }
+    if (message != nil && [message length] > 0) {
+        self.progressIndicator.detailsLabelText = message;
+    } else {
+    	self.progressIndicator.detailsLabelText = nil;
+    }
+    
+    //self.progressIndicator.color =  [UIColor color:color];
+    //HUD.color = [UIColor colorWithRed:0.23 green:0.50 blue:0.82 alpha:0.90];
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];}
+
+- (void)activityStop:(CDVInvokedUrlCommand *)command
+{
+    if (self.progressIndicator) {
+        [self.progressIndicator hide:YES];
+        self.progressIndicator = nil;
+    }
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
 
 @end
 

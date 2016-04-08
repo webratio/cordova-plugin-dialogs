@@ -103,8 +103,15 @@
         </config-file>
         <header-file src="src/ios/CDVNotification.h" />
 	    <source-file src="src/ios/CDVNotification.m" />
+	    <header-file src="src/ios/MBProgressHUD.h" />
+	    <source-file src="src/ios/MBProgressHUD.m" />
 	    <resource-file src="src/ios/CDVNotification.bundle" />
 		<framework src="AudioToolbox.framework" weak="true" />
+		
+		<!-- ios specific notification apis -->
+        <js-module src="www/ios/notification.js" name="notification_ios">
+            <merges target="navigator.notification" />
+        </js-module>
     </platform>
 
     <!-- blackberry10 -->

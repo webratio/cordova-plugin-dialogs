@@ -21,13 +21,18 @@
 #import <UIKit/UIKit.h>
 #import <AudioToolbox/AudioServices.h>
 #import <Cordova/CDVPlugin.h>
+#import "MBProgressHUD.h"
 
 @interface CDVNotification : CDVPlugin <UIAlertViewDelegate>{}
+
+@property (nonatomic, assign) MBProgressHUD* progressIndicator;
 
 - (void)alert:(CDVInvokedUrlCommand*)command;
 - (void)confirm:(CDVInvokedUrlCommand*)command;
 - (void)prompt:(CDVInvokedUrlCommand*)command;
 - (void)beep:(CDVInvokedUrlCommand*)command;
+- (void)activityStart:(CDVInvokedUrlCommand*)command;
+- (void)activityStop:(CDVInvokedUrlCommand*)command;
 
 @end
 

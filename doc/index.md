@@ -277,7 +277,7 @@ The device show or update a progress dialog.
 
 - __message__: Dialog message. _(String)_
 
-- __cancelable__: Dialog is cancelable with the BACK key. _(Boolean)_ (Optional, defaults to `false`)
+- __cancelable__: Dialog is cancelable with the BACK key. _(Boolean)_ (Optional, defaults to `false`) (Android only)
 
 
 
@@ -289,6 +289,7 @@ The device show or update a progress dialog.
 ### Supported Platforms
 
 - Android
+- iOS
 
 ## navigator.notification.activityStop
 
