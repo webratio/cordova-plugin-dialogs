@@ -25,7 +25,7 @@ var exec = require('cordova/exec');
  * Provides Android enhanced notification API.
  */
 module.exports = {
-    activityStart : function(title, message) {
+    activityStart : function(title, message, cancelable) {
         // If title and message not specified then mimic Android behavior of
         // using default strings.
         if (typeof title === "undefined" && typeof message == "undefined") {
@@ -33,7 +33,8 @@ module.exports = {
             message = 'Please wait...';
         }
 
-        exec(null, null, 'Notification', 'activityStart', [ title, message ]);
+        cancelable = cancelable || false;
+        exec(null, null, 'Notification', 'activityStart', [ title, message, cancelable ]);
     },
 
     /**

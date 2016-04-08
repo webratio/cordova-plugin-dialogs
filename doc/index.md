@@ -39,6 +39,8 @@ Although the object is attached to the global scoped `navigator`, it is not avai
 - `navigator.notification.confirm`
 - `navigator.notification.prompt`
 - `navigator.notification.beep`
+- `navigator.notification.activityStart`
+- `navigator.notification.activityStop`
 
 ## navigator.notification.alert
 
@@ -264,4 +266,42 @@ The device plays a beep sound.
 - Tizen implements beeps by playing an audio file via the media API.
 
 - The beep file must be short, must be located in a `sounds` subdirectory of the application's root directory, and must be named `beep.wav`.
+
+## navigator.notification.activityStart
+
+The device show or update a progress dialog.
+
+    navigator.notification.activityStart(title, message, cancelable);
+
+- __title__: Dialog title _(String)_ (Optional, defaults to ``)
+
+- __message__: Dialog message. _(String)_
+
+- __cancelable__: Dialog is cancelable with the BACK key. _(Boolean)_ (Optional, defaults to `false`)
+
+
+
+### Example
+
+    // Start creating new profile
+    navigator.notification.activityStart("New Profile", "Creating..", false);
+
+### Supported Platforms
+
+- Android
+
+## navigator.notification.activityStop
+
+The device close the progress dialog.
+
+    navigator.notification.activityStop();
+
+
+### Example
+
+    navigator.notification.activityStop();
+
+### Supported Platforms
+
+- Android
 

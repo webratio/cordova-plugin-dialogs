@@ -91,7 +91,7 @@ public class Notification extends CordovaPlugin {
             return true;
         }
         else if (action.equals("activityStart")) {
-            this.activityStart(args.getString(0), args.getString(1));
+            this.activityStart(args.getString(0), args.getString(1), args.getBoolean(2));
         }
         else if (action.equals("activityStop")) {
             this.activityStop();
@@ -359,27 +359,36 @@ public class Notification extends CordovaPlugin {
      * @param title     Title of the dialog
      * @param message   The message of the dialog
      */
-    public synchronized void activityStart(final String title, final String message) {
-        if (this.spinnerDialog != null) {
+    public synchronized void activityStart(final String title, final String message, final boolean cancelable) {
+        /*if (this.spinnerDialog != null) {
             this.spinnerDialog.dismiss();
             this.spinnerDialog = null;
-        }
+        }*/
         final Notification notification = this;
         final CordovaInterface cordova = this.cordova;
         Runnable runnable = new Runnable() {
             public void run() {
-                notification.spinnerDialog = createProgressDialog(cordova); // new ProgressDialog(cordova.getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
-                notification.spinnerDialog.setTitle(title);
-                notification.spinnerDialog.setMessage(message);
-                notification.spinnerDialog.setCancelable(true);
-                notification.spinnerDialog.setIndeterminate(true);
-                notification.spinnerDialog.setOnCancelListener(
-                        new DialogInterface.OnCancelListener() {
-                            public void onCancel(DialogInterface dialog) {
-                                notification.spinnerDialog = null;
-                            }
-                        });
-                notification.spinnerDialog.show();
+                if (notification.spinnerDialog != null) { //update 
+                    notification.spinnerDialog.setTitle(title);
+                    notification.spinnerDialog.setMessage(message);
+                    notification.spinnerDialog.setCancelable(cancelable);
+                    if (!notification.spinnerDialog.isShowing()) {
+                        notification.spinnerDialog.show();
+                    }
+                } else {
+                    notification.spinnerDialog = createProgressDialog(cordova); // new ProgressDialog(cordova.getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+                    notification.spinnerDialog.setTitle(title);
+                    notification.spinnerDialog.setMessage(message);
+                    notification.spinnerDialog.setCancelable(cancelable);
+                    notification.spinnerDialog.setIndeterminate(true);
+                    notification.spinnerDialog.setOnCancelListener(
+                            new DialogInterface.OnCancelListener() {
+                                public void onCancel(DialogInterface dialog) {
+                                    notification.spinnerDialog = null;
+                                }
+                            });
+                    notification.spinnerDialog.show();
+                }                
             }
         };
         this.cordova.getActivity().runOnUiThread(runnable);
