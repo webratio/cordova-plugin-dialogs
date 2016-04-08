@@ -51,7 +51,9 @@ public class Notification extends CordovaPlugin {
     public int confirmResult = -1;
     public ProgressDialog spinnerDialog = null;
     public ProgressDialog progressDialog = null;
-
+    
+    private Runnable spinnerDialogUpdate = null;
+    
     /**
      * Constructor.
      */
@@ -366,32 +368,39 @@ public class Notification extends CordovaPlugin {
         }*/
         final Notification notification = this;
         final CordovaInterface cordova = this.cordova;
-        Runnable runnable = new Runnable() {
+        this.spinnerDialogUpdate = new Runnable() {
             public void run() {
-                if (notification.spinnerDialog != null) { //update 
-                    notification.spinnerDialog.setTitle(title);
-                    notification.spinnerDialog.setMessage(message);
-                    notification.spinnerDialog.setCancelable(cancelable);
-                    if (!notification.spinnerDialog.isShowing()) {
+                synchronized (notification) {
+                    if (notification.spinnerDialogUpdate != this) {
+                        return; // operation aborted before run
+                    }
+                    notification.spinnerDialogUpdate = null;
+
+                    if (notification.spinnerDialog != null) { //update 
+                        notification.spinnerDialog.setTitle(title);
+                        notification.spinnerDialog.setMessage(message);
+                        notification.spinnerDialog.setCancelable(cancelable);
+                        if (!notification.spinnerDialog.isShowing()) {
+                            notification.spinnerDialog.show();
+                        }
+                    } else {
+                        notification.spinnerDialog = createProgressDialog(cordova); // new ProgressDialog(cordova.getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+                        notification.spinnerDialog.setTitle(title);
+                        notification.spinnerDialog.setMessage(message);
+                        notification.spinnerDialog.setCancelable(cancelable);
+                        notification.spinnerDialog.setIndeterminate(true);
+                        notification.spinnerDialog.setOnCancelListener(
+                                new DialogInterface.OnCancelListener() {
+                                    public void onCancel(DialogInterface dialog) {
+                                        notification.spinnerDialog = null;
+                                    }
+                                });
                         notification.spinnerDialog.show();
                     }
-                } else {
-                    notification.spinnerDialog = createProgressDialog(cordova); // new ProgressDialog(cordova.getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
-                    notification.spinnerDialog.setTitle(title);
-                    notification.spinnerDialog.setMessage(message);
-                    notification.spinnerDialog.setCancelable(cancelable);
-                    notification.spinnerDialog.setIndeterminate(true);
-                    notification.spinnerDialog.setOnCancelListener(
-                            new DialogInterface.OnCancelListener() {
-                                public void onCancel(DialogInterface dialog) {
-                                    notification.spinnerDialog = null;
-                                }
-                            });
-                    notification.spinnerDialog.show();
-                }                
+                }
             }
         };
-        this.cordova.getActivity().runOnUiThread(runnable);
+        this.cordova.getActivity().runOnUiThread(this.spinnerDialogUpdate);
     }
 
     /**
@@ -401,6 +410,9 @@ public class Notification extends CordovaPlugin {
         if (this.spinnerDialog != null) {
             this.spinnerDialog.dismiss();
             this.spinnerDialog = null;
+        }
+        if (this.spinnerDialogUpdate != null) {
+            this.spinnerDialogUpdate = null;
         }
     }
 
