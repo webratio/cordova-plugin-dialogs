@@ -118,3 +118,6 @@
 
 ### 0.2.11.2 (Jun 12, 2015)
 * Fixed a activity overlay freezing when calling activityStop quickly after activityStart.
+
+### 0.2.11.3 (Mar 29, 2016)
+* Added Windows Phone 8 support
