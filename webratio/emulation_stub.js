@@ -23,6 +23,7 @@ function createStubs() {
         act.cancelable = false;
         
         act.activityElement = document.createElement("DIV");
+        act.activityElement.id = "wr-activity-waiting";
         act.activityElement.style.background = "rgba(0, 0, 0, 0.5)";
         act.activityElement.style.position = "fixed";
         act.activityElement.style.width = "100%";
@@ -89,12 +90,16 @@ function createStubs() {
     return {
         Notification : {
             alert : function(message, title, buttonLabel) {
-                if (title) {
-                    message = title + "\n" + message;
-                }
+                
                 if (notifications) {//Ripple Notifications
+                    if (title) {
+                        message = title + "<br>" + message;
+                    }
                     return notifications.alert(undefined, undefined, [message]);
                 } else {
+                    if (title) {
+                        message = title + "\n" + message;
+                    }
                     window.alert(message);
                 }
             },
