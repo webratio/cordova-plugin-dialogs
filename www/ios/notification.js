@@ -22,7 +22,7 @@
 var exec = require('cordova/exec');
 
 /**
- * Provides Android enhanced notification API.
+ * Provides iOS enhanced notification API.
  */
 module.exports = {
 	
