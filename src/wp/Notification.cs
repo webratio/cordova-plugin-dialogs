@@ -24,16 +24,34 @@ using Microsoft.Xna.Framework.Audio;
 using WPCordovaClassLib.Cordova.UI;
 using System.Diagnostics;
 using Microsoft.Phone.Shell;
-
+using System.Windows.Controls.Primitives;
 
 namespace WPCordovaClassLib.Cordova.Commands
 {
     public class Notification : BaseCommand
     {
-        static ProgressLayer progressLayer = null;
         const int DEFAULT_DURATION = 5;
 
         private NotificationBox notifyBox;
+        private Popup progressPopup;
+        private ProgressLayer progressLayer;
+
+        public Notification()
+        {
+            progressLayer = new ProgressLayer()
+            {
+                IsEnabled = true,
+                Width = Application.Current.Host.Content.ActualWidth,
+                Height = Application.Current.Host.Content.ActualHeight
+            };
+
+            // show the progress layer in a popup, so it can appear over other popups (e.g. splashscreen)
+            progressPopup = new Popup()
+            {
+                IsOpen = false,
+                Child = progressLayer
+            };
+        }
 
         private class NotifBoxData
         {
@@ -404,30 +422,11 @@ namespace WPCordovaClassLib.Cordova.Commands
             string[] args = JSON.JsonHelper.Deserialize<string[]>(options);
             Deployment.Current.Dispatcher.BeginInvoke(() =>
             {
-                PhoneApplicationFrame frame = Application.Current.RootVisual as PhoneApplicationFrame;
-                if (frame != null)
-                {
-                    PhoneApplicationPage page = frame.Content as PhoneApplicationPage;
-                    if (page != null)
-                    {
-                        var temp = page.FindName("LayoutRoot");
-                        Grid grid = temp as Grid;
-                        if (grid != null)
-                        {
-                            if (progressLayer != null)
-                            {
-                                grid.Children.Remove(progressLayer);
-                            }
-                            progressLayer = new ProgressLayer();
-                            progressLayer.IsEnabled = true;
-                            progressLayer.title.Text = !String.IsNullOrEmpty(args[0]) ? args[0] : args[1];
-                            if (!String.IsNullOrEmpty(args[0]) && !String.IsNullOrEmpty(args[1])) {
-                                progressLayer.message.Text = args[1];
-                            }
-                            grid.Children.Add(progressLayer);
-                        }
-                    }
+                progressLayer.title.Text = !String.IsNullOrEmpty(args[0]) ? args[0] : args[1];
+                if (!String.IsNullOrEmpty(args[0]) && !String.IsNullOrEmpty(args[1])) {
+                    progressLayer.message.Text = args[1];
                 }
+                showProgressPopup();
             });
         }
 
@@ -437,24 +436,7 @@ namespace WPCordovaClassLib.Cordova.Commands
         {
             Deployment.Current.Dispatcher.BeginInvoke(() =>
             {
-                if (progressLayer != null)
-                {
-                    progressLayer.IsEnabled = false;
-                    PhoneApplicationFrame frame = Application.Current.RootVisual as PhoneApplicationFrame;
-                    if (frame != null)
-                    {
-                        PhoneApplicationPage page = frame.Content as PhoneApplicationPage;
-                        if (page != null)
-                        {
-                            Grid grid = page.FindName("LayoutRoot") as Grid;
-                            if (grid != null)
-                            {
-                                grid.Children.Remove(progressLayer);
-                            }
-                        }
-                    }
-                    progressLayer = null;
-                }
+                hideProgressPopup();
             });
         }
 
@@ -465,30 +447,11 @@ namespace WPCordovaClassLib.Cordova.Commands
             string[] args = JSON.JsonHelper.Deserialize<string[]>(options);
             Deployment.Current.Dispatcher.BeginInvoke(() =>
             {
-                PhoneApplicationFrame frame = Application.Current.RootVisual as PhoneApplicationFrame;
-                if (frame != null)
-                {
-                    PhoneApplicationPage page = frame.Content as PhoneApplicationPage;
-                    if (page != null)
-                    {
-                        var temp = page.FindName("LayoutRoot");
-                        Grid grid = temp as Grid;
-                        if (grid != null)
-                        {
-                            if (progressLayer != null)
-                            {
-                                grid.Children.Remove(progressLayer);
-                            }
-                            progressLayer = new ProgressLayer();
-                            progressLayer.IsEnabled = true;
-                            progressLayer.progressBar.IsIndeterminate = false;
-                            progressLayer.progressBar.Maximum = 100;
-                            progressLayer.title.Text = args[0];
-                            progressLayer.message.Text = args[1];
-                            grid.Children.Add(progressLayer);
-                        }
-                    }
-                }
+                progressLayer.progressBar.IsIndeterminate = false;
+                progressLayer.progressBar.Maximum = 100;
+                progressLayer.title.Text = args[0];
+                progressLayer.message.Text = args[1];
+                showProgressPopup();
             });
         }
 
@@ -498,24 +461,7 @@ namespace WPCordovaClassLib.Cordova.Commands
         {
             Deployment.Current.Dispatcher.BeginInvoke(() =>
             {
-                if (progressLayer != null)
-                {
-                    progressLayer.IsEnabled = false;
-                    PhoneApplicationFrame frame = Application.Current.RootVisual as PhoneApplicationFrame;
-                    if (frame != null)
-                    {
-                        PhoneApplicationPage page = frame.Content as PhoneApplicationPage;
-                        if (page != null)
-                        {
-                            Grid grid = page.FindName("LayoutRoot") as Grid;
-                            if (grid != null)
-                            {
-                                grid.Children.Remove(progressLayer);
-                            }
-                        }
-                    }
-                    progressLayer = null;
-                }
+                hideProgressPopup();
             });
         }
 
@@ -526,11 +472,23 @@ namespace WPCordovaClassLib.Cordova.Commands
             string[] args = JSON.JsonHelper.Deserialize<string[]>(options);
             Deployment.Current.Dispatcher.BeginInvoke(() =>
             {
-                if (progressLayer != null)
-                {
-                    progressLayer.progressBar.Value = int.Parse(args[0]);
-                }
+                progressLayer.progressBar.Value = int.Parse(args[0]);
             });
+        }
+
+        private void showProgressPopup()
+        {
+            // always switch IsOpen to bring the popup to front
+            if (progressPopup.IsOpen)
+            {
+                progressPopup.IsOpen = false;
+            }
+            progressPopup.IsOpen = true;
+        }
+
+        private void hideProgressPopup()
+        {
+            progressPopup.IsOpen = false;
         }
 
 
