@@ -1,6 +1,8 @@
 function createStubs() {
     
     var notifications = window.top.ripple && window.top.ripple('platform/cordova/2.0.0/bridge/notification');
+    var alertFn = notifications && notifications.alert;
+    var confirmFn = notifications && notifications.confirm;
     
     var audioContext = (function() {
         // Determine if the Audio API is supported by this browser
@@ -91,11 +93,11 @@ function createStubs() {
         Notification : {
             alert : function(message, title, buttonLabel) {
                 
-                if (notifications) {//Ripple Notifications
+                if (alertFn) {//Ripple Notifications.alert
                     if (title) {
                         message = title + "<br>" + message;
                     }
-                    return notifications.alert(undefined, undefined, [message]);
+                    return alertFn(undefined, undefined, [message]);
                 } else {
                     if (title) {
                         message = title + "\n" + message;
@@ -106,10 +108,10 @@ function createStubs() {
             
             confirm : function(message, title, buttonLabels) {
                 
-                if (notifications) {//Ripple Notifications
+                if (confirmFn) {//Ripple Notifications.confirm
                     var promise = new Promise(function(resolve, reject) {
                         var callback = function(index) {resolve(index)}                                            
-                        notifications.confirm(callback, undefined, [message, title, buttonLabels]);
+                        confirmFn(callback, undefined, [message, title, buttonLabels]);
                     });
                     
                     return promise;
