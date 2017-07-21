@@ -25,6 +25,7 @@ var cordova = require('cordova');
 
 var isAlertShowing = false;
 var alertStack = [];
+var dialog = null;
 
 // CB-8928: When toStaticHTML is undefined, prompt fails to run
 function _cleanHtml(html) { return html; }
@@ -116,6 +117,81 @@ function createPromptDialog(title, message, buttons, defaultText, callback) {
 }
 
 module.exports = {
+	updateLoading: function (timeout, originalMessage, counter) {
+        if (dialog == null) {
+            return;
+        }
+        
+		/* to update the message with dotted loading... doesn't work cause lock of UI*/
+        var message = originalMessage;
+        if (counter == 3) {
+            counter = 0;
+        }
+        for (var i = 0; i < counter; i++) {
+            if (i == 0) {
+                message += " ";
+            }
+            message += ".";
+        }
+        dialog.content = message;
+        timeout = setTimeout(function () {
+            module.exports.updateLoading(timeout, originalMessage, counter + 1);
+        }, 100);
+    },
+    
+	activityStart:function(win, loseX, args) {
+        if (isAlertShowing) {
+            return;
+        }
+        isAlertShowing = true;
+
+        var message = args[0];
+        var title = args[1];
+        var cancelable = false;
+
+        try {
+            var md = new Windows.UI.Popups.MessageDialog(message, title); // TODO: find a way to create a ContentDialog
+            dialog = md;
+            module.exports.updateLoading(null, message, 0);
+            asyncOperation = md.showAsync();
+            asyncOperation.then(function () {
+                isAlertShowing = false;
+                asyncOperation = null;
+                dialog = null;
+                win && win();
+            });
+        } catch (e) {
+            // set isAlertShowing flag back to false in case of exception
+            isAlertShowing = false;
+            throw e;
+        }
+    },
+    
+    activityStop: function (win, loseX, args) {
+        if (dialog != null && asyncOperation != null) {
+            asyncOperation.cancel();
+            asyncOperation = null;
+            dialog = null;
+        }
+        isAlertShowing = false;
+    },
+    
+    progressStart: function(win, loseX, args) {
+      module.exports.activityStart(win, loseX, args);
+    },
+            
+    progressStop: function(win, loseX, args) {
+      module.exports.activityStop(win, loseX, args);
+    },
+            
+    progressValue: function(win, loseX, args) {
+      log("progressValue");
+    },
+            
+    vibrate: function(win, loseX, args) {
+      log("vibrate");
+    },
+	
     alert:function(win, loseX, args) {
 
         if (isAlertShowing) {
