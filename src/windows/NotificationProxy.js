@@ -117,7 +117,7 @@ function createPromptDialog(title, message, buttons, defaultText, callback) {
 }
 
 module.exports = {
-	updateLoading: function (timeout, originalMessage, counter) {
+    updateLoading: function (timeout, originalMessage, counter) {
         if (dialog == null) {
             return;
         }
@@ -139,7 +139,7 @@ module.exports = {
         }, 100);
     },
     
-	activityStart:function(win, loseX, args) {
+    activityStart:function(win, loseX, args) {
         if (isAlertShowing) {
             return;
         }
