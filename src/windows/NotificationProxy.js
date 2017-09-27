@@ -25,6 +25,8 @@ var cordova = require('cordova');
 
 var isAlertShowing = false;
 var alertStack = [];
+var activityDialog = null;
+var progressDialog = null;
 
 // CB-8928: When toStaticHTML is undefined, prompt fails to run
 function _cleanHtml(html) { return html; }
@@ -113,6 +115,58 @@ function createPromptDialog(title, message, buttons, defaultText, callback) {
     dlg.querySelector('#prompt-input').focus();
 
     return dlgWrap;
+}
+
+// Windows does not provide native UI for progress dialog and progress bar sowe use some
+// simple html-based implementation until it is available
+function createActivityDialog(initialMessage, initialProgressValue) {
+
+    var dlgWrap = document.createElement("div");
+    dlgWrap.style.position = "absolute";
+    dlgWrap.style.width = "100%";
+    dlgWrap.style.height = "100%";
+    dlgWrap.style.backgroundColor = "rgba(0,0,0,0.25)";
+    dlgWrap.style.zIndex = "100000";
+    dlgWrap.className = "dlgWrap";
+
+    var dlg = dlgWrap.appendChild(document.createElement("div"));
+    dlg.style.position = "relative";
+    dlg.style.top = "50%";
+    dlg.style.transform = "translateY(-50%)";
+    dlg.style.margin = "auto";
+    dlg.style.padding = "1em";
+    dlg.style.width = "60%";
+    dlg.style.textAlign = "center";
+    dlg.style.fontSize = "initial";
+    dlg.style.color = "black";
+    dlg.style.backgroundColor = "white";
+    dlg.style.filter = "drop-shadow(0px 0px 0.3em black)";
+    dlg.style.msUserSelect = "none";
+    dlg.style.cursor = "default";
+    dlg.className = "win-type-medium";
+
+    var p = dlg.appendChild(document.createElement("p"));
+    p.textContent = initialMessage;
+
+    var progress = dlg.appendChild(document.createElement("progress"));
+    progress.max = 100;
+    if (typeof initialProgressValue === "number") {
+        progress.value = initialProgressValue;
+    }
+
+    document.body.appendChild(dlgWrap);
+
+    return {
+        updateMessage: function(message) {
+            p.textContent = message;
+        },
+        updateProgress: function(value) {
+            progress.value = value;
+        },
+        destroy: function () {
+            dlgWrap.parentNode.removeChild(dlgWrap);
+        }
+    }
 }
 
 module.exports = {
@@ -244,6 +298,64 @@ module.exports = {
         snd.addEventListener("ended", onEvent);
         onEvent();
 
+    },
+
+    activityStart:function(winX, loseX, args) {
+        
+        var message = args[1];
+        
+        if (!activityDialog) {
+            activityDialog = createActivityDialog(message)
+        } else {
+            activityDialog.updateMessage(message);
+        }
+        
+        winX && winX();
+    },
+
+    activityStop:function(winX, loseX, args) {
+        
+        if (activityDialog) {
+            activityDialog.destroy();
+            activityDialog = null;
+        }
+        
+        winX && winX();
+    },
+
+    progressStart:function(winX, loseX, args) {
+        
+        var message = args[1];
+        
+        if (progressDialog) {
+            progressDialog.destroy();
+            progressDialog = null;
+        }
+        
+        progressDialog = createActivityDialog(message, 0);
+        
+        winX && winX();
+    },
+
+    progressStop:function(winX, loseX, args) {
+        
+        if (progressDialog) {
+            progressDialog.destroy();
+            progressDialog = null;
+        }
+        
+        winX && winX();
+    },
+
+    progressValue:function(winX, loseX, args) {
+        
+        var value = args[0];
+        
+        if (progressDialog) {
+            progressDialog.updateProgress(value);
+        }
+        
+        winX && winX();
     }
 };
 
