@@ -45,7 +45,7 @@ function createPromptDialog(title, message, buttons, defaultText, callback) {
     dlgWrap.style.width = "100%";
     dlgWrap.style.height = "100%";
     dlgWrap.style.backgroundColor = "rgba(0,0,0,0.25)";
-    dlgWrap.style.zIndex = "100000";
+    dlgWrap.style.zIndex = "2147483647";
     dlgWrap.className = "dlgWrap";
 
     var dlg = document.createElement("div");
@@ -126,7 +126,7 @@ function createActivityDialog(initialMessage, initialProgressValue) {
     dlgWrap.style.width = "100%";
     dlgWrap.style.height = "100%";
     dlgWrap.style.backgroundColor = "rgba(0,0,0,0.25)";
-    dlgWrap.style.zIndex = "100000";
+    dlgWrap.style.zIndex = "2147483647";
     dlgWrap.className = "dlgWrap";
 
     var dlg = dlgWrap.appendChild(document.createElement("div"));
