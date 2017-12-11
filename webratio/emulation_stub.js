@@ -20,69 +20,6 @@ function createStubs() {
         return undefined;
     }());
     
-    var activityUI = new function () {
-        var act = {};
-        act.cancelable = false;
-        
-        act.activityElement = document.createElement("DIV");
-        act.activityElement.id = "wr-activity-waiting";
-        act.activityElement.style.background = "rgba(0, 0, 0, 0.5)";
-        act.activityElement.style.position = "fixed";
-        act.activityElement.style.width = "100%";
-        act.activityElement.style.height = "100%";
-        act.activityElement.style.zIndex = "10000";
-        /* > Create div wrapper */
-        act.div = document.createElement("DIV");
-        act.div.style.background = "#000";
-        act.div.style.padding = "10px";
-        act.div.style.borderRadius = "5px";
-        act.div.style.margin = "0 auto";
-        act.div.style.width = "200px";
-        act.div.style.maxWidth = "80%";
-        act.div.style.color = "#fff";
-        act.div.style.textAlign = "center";
-        act.div.style.top = "50%";
-        act.div.style.position = "relative";
-        act.div.style.marginTop = "-30px";
-        act.activityElement.appendChild(act.div);
-        /* > Create title */
-        act.title = document.createElement("DIV");
-        act.title.style.fontWeight = "700";
-        act.div.appendChild(act.title);
-        /* > Create description */
-        act.description = document.createElement("DIV");
-        act.div.appendChild(act.description);
-        
-        
-        act.setTitle = function(title) {
-            act.title.innerHTML = title;
-        }
-        
-        act.setDescription = function(description) {
-            act.description.innerHTML = description;
-        }
-        
-        act.setCancelable = function(cancelable) {
-            act.cancelable = cancelable;
-        }
-        
-        act.show = function (title, description, cancelable) {
-            act.setTitle(title || "");
-            act.setDescription(description || "");
-            act.setCancelable(cancelable || false);
-            if (!act.activityElement.parentNode) {
-                document.body.appendChild(act.activityElement);
-            }
-        };
-        act.hide = function () {
-            if (act.activityElement.parentNode) {
-                act.activityElement.parentNode.removeChild(act.activityElement);
-            }
-        };
-        
-        return act;
-    };
-    
     function log() {
         var args = [].slice.call(arguments, 0);
         args.unshift("[notification]");
@@ -146,14 +83,6 @@ function createStubs() {
                     }; // OK
                 }
                 
-            },
-            
-            activityStart: function (title, description, cancelable) {
-                activityUI.show(title, description, cancelable);                
-            },
-            
-            activityStop: function () {
-                activityUI.hide();
             },
             
             progressStart : function(title, message) {
