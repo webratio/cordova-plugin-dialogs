@@ -1,9 +1,5 @@
 function createStubs() {
     
-    var notifications = window.top.ripple && window.top.ripple('platform/cordova/2.0.0/bridge/notification');
-    var alertFn = notifications && notifications.alert;
-    var confirmFn = notifications && notifications.confirm;
-    
     var audioContext = (function() {
         // Determine if the Audio API is supported by this browser
         var AudioApi = window.AudioContext;
@@ -28,43 +24,6 @@ function createStubs() {
     
     return {
         Notification : {
-            alert : function(message, title, buttonLabel) {
-                
-                if (alertFn) {//Ripple Notifications.alert
-                    if (title) {
-                        message = title + "<br>" + message;
-                    }
-                    return alertFn(undefined, undefined, [message]);
-                } else {
-                    if (title) {
-                        message = title + "\n" + message;
-                    }
-                    window.alert(message);
-                }
-            },
-            
-            confirm : function(message, title, buttonLabels) {
-                
-                if (confirmFn) {//Ripple Notifications.confirm
-                    var promise = new Promise(function(resolve, reject) {
-                        var callback = function(index) {resolve(index)}                                            
-                        confirmFn(callback, undefined, [message, title, buttonLabels]);
-                    });
-                    
-                    return promise;
-                } else {
-                    if (title) {
-                        message = title + "\n" + message;
-                    }
-                    if (window.confirm(message)) {
-                        return 1
-                    } else {
-                        return 2; // Cancel
-                    }
-                }
-                
-            },
-            
             prompt : function(message, title, buttonLabels, defaultText) {
                 if (title) {
                     message = title + "\n" + message;
